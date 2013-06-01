@@ -1,0 +1,14 @@
+{
+    "name": "portify",
+    "description": "Moves your playlists to Google",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+		"googleclientlogin": "*",
+		"spotify-web": "*",
+		"socket.io": "*",
+	    "express": "*",
+	    "superagent": "*",
+	    "levenshtein": "*"
+    }
+}

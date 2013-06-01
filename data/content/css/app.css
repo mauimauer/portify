@@ -1,0 +1,130 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.container {
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+}
+
+.container div.card {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    top: 0;
+    overflow-y: auto;
+}
+
+.row {
+    margin-left: auto;
+}
+
+.bottom_bar {
+    z-index: 5;
+    position: absolute;
+    bottom: 0px;
+    height: 60px;
+    left: 0px;
+    right: 0px;
+    background: #7F8C8D;
+    border-top: 4px solid #ffffff;
+    padding: 10px;
+}
+
+.card {
+    padding: 10px;
+}
+
+.portify {
+    background: #E67E22;
+    /*#9cca3b*/;
+    color: #ffffff;
+}
+
+.portify a {
+    color: #ffffff;
+}
+
+.google {
+    background: #2980B9; /* #0266C8 */
+    color: #ffffff;
+}
+
+.google legend {
+    color: #ffffff;
+}
+
+.spotify {
+    background: #9cca3b;
+    /*#9cca3b*/;
+    color: #ffffff;
+}
+
+.spotify table {
+    background: #ECF0F1;
+}
+
+.spotify thead {
+    background: #BDC3C7;
+}
+
+.spotify tbody {
+    color: #7F8C8D;
+}
+
+.spotify legend {
+    color: #ffffff;
+}
+
+fieldset .btn {
+    margin-bottom: 10px;
+}
+
+.intro_text {
+    float: left;
+    width: 50%;
+    font-size: 16pt;
+}
+
+.intro_logo {
+    float: right;
+    width: 50%;
+    text-align: right;
+}
+
+.bottom_bar .btn.btn-primary {
+    background-color: #BDC3C7;
+}
+
+.bottom_bar .btn.btn-primary:hover, .btn.btn-primary:focus, .btn-group:focus .btn.btn-primary.dropdown-toggle {
+    background-color: #95A5A6;
+}
+
+.bottom_bar .btn.btn-primary:active, .btn-group.open .btn.btn-primary.dropdown-toggle, .btn.btn-primary.active {
+    background-color: #E67E22;
+}
+
+.pagination {
+    margin: 10px 0;
+}
+
+::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.35);
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.55);
+}
+::-webkit-scrollbar-corner {
+    background: #000;
+}
