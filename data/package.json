@@ -4,6 +4,8 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+		"appjs": "*",
+		"appjs-win32": "*",
 		"googleclientlogin": "*",
 		"spotify-web": "*",
 		"socket.io": "*",
