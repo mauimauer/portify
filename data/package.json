@@ -5,10 +5,10 @@
     "private": true,
     "dependencies": {
 		"googleclientlogin": "*",
-		"spotify-web": "*",
 		"socket.io": "*",
 	    "express": "*",
 	    "superagent": "*",
-	    "levenshtein": "*"
+	    "levenshtein": "*",
+	    "timequeue": "*"
     }
 }

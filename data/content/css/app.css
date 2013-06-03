@@ -14,6 +14,11 @@ body {
     bottom: 60px;
 }
 
+.additional_bottom {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .container div.card {
     position: absolute;
     left: 0;
@@ -45,8 +50,216 @@ body {
 
 .portify {
     background: #E67E22;
-    /*#9cca3b*/;
     color: #ffffff;
+}
+
+.process_top {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 30px;
+    background: rgba(133,133,133,0.6);
+    opacity: 0.6;
+    z-index: 9;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 13pt;
+    line-height: 25px;
+    padding-left: 5px;
+}
+
+.done {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: rgba(133,133,133,0.8);
+    opacity: 1;
+    z-index: 15;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 13pt;
+    text-align: center;
+}
+
+.done h1 {
+    margin-top: 25%;
+}
+.done a {
+    color: #FFFFFF;
+}
+
+
+.ok,.nok {
+    position: absolute; z-index: 5; right: 10px; bottom: 0px;
+    display: block;
+}
+
+.ok,.nok {
+    font-size: 300%;
+    opacity: 0.6;
+}
+
+.nok {
+    z-index: 6;
+}
+
+/*
+.process div {
+    -webkit-filter: grayscale(1);
+    -webkit-transition:-webkit-filter 0.8s ease-in-out;
+}*/
+
+.album {
+    width: 10%;
+    float: left;
+    position: relative;
+}
+
+.process div.color {
+    -webkit-filter: grayscale(0);
+}
+
+.view-anim-leave {
+    -webkit-transition: .5s linear opacity;
+    opacity: 1;
+}
+
+.view-anim-leave.view-anim-leave-active {
+    opacity: 0;
+}
+
+.view-anim-enter, done-anim-enter {
+    -webkit-transition: .5s linear opacity;
+
+    opacity: 0;
+}
+
+.view-anim-enter.view-anim-enter-active, .done-anim-enter.done-anim-enter-active {
+    opacity: 1;
+}
+
+.row {
+    right: 0px;
+    left: 0px;
+}
+
+.col {
+    position: relative;
+    width: 10%;
+    padding-bottom: 10%;
+    float: left;
+    height: 0;
+    box-sizing: border-box;
+}
+
+.current_playlist {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    top: 50%;
+    height: 200px;
+    background: #7F8C8D;
+    z-index: 100;
+    margin-top: -100px;
+}
+
+.current_playlist .progress .bar {
+    background: #E67E22;
+}
+.current_playlist .progress {
+    border-radius: 0px;
+    margin-bottom: 5px;
+}
+
+.process_details {
+    padding: 0px 10px 0px 10px;
+}
+
+.process_details h1 {
+    margin-bottom: 20px;
+}
+
+.process_details {
+    font-size: 205%;
+    text-align: center;
+}
+
+
+.simpleprocess-anim-enter {
+    -webkit-animation-duration: 1s;
+    -webkit-animation-delay: .5s;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
+    opacity: 0;
+}
+
+.simpleprocess-anim-enter.simpleprocess-anim-enter-active {
+    -webkit-animation-name: bounceInDown;
+    opacity: 1;
+}
+
+.simpleprocess-anim-leave {
+    -webkit-animation-duration: 1s;
+    -webkit-animation-delay: .5s;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
+    opacity: 1;
+}
+
+.simpleprocess-anim-leave.simpleprocess-anim-leave-active {
+    -webkit-animation-name: bounceOutDown;
+}
+
+
+.album-anim-enter {
+    -webkit-animation-duration: .8s;
+    -webkit-animation-delay: .1s;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
+    opacity: 0;
+}
+
+.album-anim-enter.album-anim-enter-active {
+    -webkit-animation-name: fadeIn;
+    opacity: 1;
+}
+
+.album-anim-leave {
+    -webkit-animation-duration: .5s;
+    -webkit-animation-delay: 0s;
+    -webkit-animation-timing-function: ease;
+    opacity: 1;
+}
+
+.album-anim-leave.album-anim-leave-active {
+    -webkit-animation-name: fadeOut;
+}
+
+.placeholder {
+    background: url('../img/no_album.png');
+}
+
+.container div.process {
+    padding: 0px;
+    margin: 0px;
+    overflow-y: hidden;
+    -webkit-user-select: none;
+    background-image: url('/img/big_cover.png');
+    -webkit-transition:-webkit-filter 0.8s ease-in-out, background 1s linear;
+
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+}
+
+.blur {
+    -webkit-filter: blur(5px);
+}
+
+.album img {
+    width: 100%;
 }
 
 .portify a {
@@ -54,7 +267,7 @@ body {
 }
 
 .google {
-    background: #2980B9; /* #0266C8 */
+    background: #2980B9;
     color: #ffffff;
 }
 
@@ -64,7 +277,6 @@ body {
 
 .spotify {
     background: #9cca3b;
-    /*#9cca3b*/;
     color: #ffffff;
 }
 
@@ -82,6 +294,13 @@ body {
 
 .spotify legend {
     color: #ffffff;
+}
+
+.test {
+    -webkit-animation-duration: 1s;
+    -webkit-animation-delay: .2s;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
 }
 
 fieldset .btn {

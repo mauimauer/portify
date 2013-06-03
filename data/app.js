@@ -9,8 +9,10 @@ var app,
 	Spotify = require('spotify-web'),
 	events = require('events'),
 	googleMusic = require('./gmusic.js'),
-	io = require('socket.io');
+	io = require('socket.io'),
+	TimeQueue = require('timequeue');
 
+console.log("portify 0.1");
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');
@@ -33,111 +35,220 @@ if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	});
 	app.use(app.router);
 
-	server.listen(3000);
+	server.listen(3132);
 	io = io.listen(server);
+	io.set('log level', 1);
 } else {
-	io = io.listen(1983);
+	console.log("Starting with harmony");
 	postField = "post";
 	app = module.exports = require('appjs');
 	router = app.router;
+	io = io.listen(3132);
+	io.set('log level', 1);
 	appjs = true;
 }
 
-var Transfer = function() {};
+//console.log=function(){};
+
+function wait(delay) {
+	return {
+		then: function (callback) {
+			setTimeout(callback, delay);
+		}
+	};
+}
+
+function getRandomInt (min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var Transfer = function() {
+
+};
 Transfer.prototype = new events.EventEmitter;
 var transferProcess = new Transfer();
+transferProcess.tracksDone = 0;
+transferProcess.listsDone = 0;
+transferProcess.playlistLength = 0;
+transferProcess.list = [];
 
-transferProcess.on('transfer', function(lists) {
+transferProcess.on('transfer', function(list) {
 	var playlistMap = {};
 	var playlists = [];
+
+	if(!googleMusic || !spotifySession)
+		return;
+
+	this.list = list;
+	var me = this;
+	this.listsDone = 0;
+	this.tracksDone = 0;
+	this.playlistLength = 0;
 	googleMusic.init(googleAuth, function() {
 		console.log("initiated gmusic");
-		lists.forEach(function(item) {
 
-			googleMusic.addPlaylist(item.name, function(playlist) {
-				console.log("created playlist "+ item.name + "("+item.uri+") on google music");
-
-				playlistMap[item.uri] = playlist.id;
-
-				io.sockets.emit('gmusic:created_playlist', playlist);
-
-				console.log("fetch info about playlist in spotify");
-
-				var start = 0;
-				var plo = {
-					spotify_uri: item.uri,
-					gm_id: playlist.id,
-					tracks: []
-				};
-
-				var trackBack = function(err, spotifyPlaylist) {
-					if(err) {
-						io.sockets.emit('spotify:error', err);
-						return;
-					}
-
-					spotifyPlaylist.contents.items.forEach(function(track) {
-						spotifySession.get(track.uri, function (err, trackDetail) {
-							if(err) {
-								io.sockets.emit('spotify:error', err);
-								return;
-							}
-
-							io.sockets.emit('spotify:got_track', { gm_playlist_id: playlist.id,
-								spotify_track_uri: track.uri,
-								title: trackDetail.name,
-								artist: trackDetail.artist[0].name,
-								cover: trackDetail.album.cover[0].uri
-							});
-
-							googleMusic.search2(trackDetail.artist[0].name+" - "+trackDetail.name, function(searchResult) {
-								console.log(searchResult);
-
-								if(searchResult.length > 1 && searchResult[1][0] && searchResult[1][0][0]) {
-									var gmusicMatch = searchResult[1][0][0];
-
-									var gmusicId = gmusicMatch[0];
-									var gmusicNormalisedArtist = gmusicMatch[7];
-									var gmusicNormalisedAlbum = gmusicMatch[9];
-									var gmusicNormalisedAlbumArtist = gmusicMatch[8];
-									var gmusicNormalisedTitle = gmusicMatch[6];
-
-									if(gmusicNormalisedTitle.indexOf('karaoke') == -1) {
-										io.sockets.emit('gmusic:found_possible_matches', { found: true, spotify_uri: track.uri, gmusic_id: gmusicId});
-
-										googleMusic.addToPlaylist(playlist.id, [ {"id":gmusicId,"type":2} ], function(res) {
-											io.sockets.emit('gmusic:added', { found: false, spotify_uri: track.uri, gmusic_id: gmusicId});
-										});
-									} else {
-										io.sockets.emit('gmusic:found_possible_matches', { found: false, spotify_uri: track.uri, karaoke: true});
-									}
-								} else {
-									io.sockets.emit('gmusic:found_possible_matches', { found: false, spotify_uri: track.uri});
-								}
-
-							});
-						});
-					});
-
-					start += spotifyPlaylist.contents.items;
-
-					if(spotifyPlaylist.contents.truncated)
-						spotifySession.playlist(item.uri, start, 20, trackBack);
-				};
-				spotifySession.playlist(item.uri, start, 20, trackBack);
-			});
-		});
+		transferPlaylist(me.list[0]);
 	});
 });
+transferProcess.on('gotPlaylistLength', function(playlistLength) {
+	console.log("gotPlaylistLength()");
+	io.sockets.emit('portify', { type: 'playlist_length', data: { length: playlistLength }});
+	this.playlistLength = playlistLength;
+});
+transferProcess.on('trackDone', function(track) {
+	this.tracksDone++;
+	console.log("trackDone() "+ this.tracksDone+"/"+this.playlistLength);
+	if(this.tracksDone == this.playlistLength) {
+		this.emit("playlistDone");
+	} else if(this.tracksDone > this.playlistLength) {
+		console.log("surplus item");
+		console.log(track)
+	}
+});
+transferProcess.on('playlistDone', function() {
+	console.log("playlistDone()");
+	io.sockets.emit('portify', { type: 'playlist_done', data: { playlist: this.list[this.listsDone] }});
+	this.listsDone++;
+	if(this.listsDone < this.list.length) {
+		var me = this;
+		setTimeout(function() {
+			transferPlaylist(me.list[me.listsDone]);
+		}, 2000)
+	} else {
+		this.emit('allDone');
+		io.sockets.emit('portify', { type: 'all_done' });
+	}
+});
+
+transferProcess.on('allDone', function() {
+	console.log("allDone()");
+});
+
+var transferPlaylist = function(item) {
+	transferProcess.tracksDone = 0;
+	transferProcess.playlistLength = 0;
+
+	io.sockets.emit('portify', { type: 'playlist_started', data: { playlist: item }});
+	googleMusic.addPlaylist(item.name, function(playlist) {
+		console.log("created playlist "+ item.name + "("+item.uri+") on google music");
+
+		io.sockets.emit('gmusic', { type: 'playlist', data: { pl: playlist, name: item.name }});
+
+		console.log("fetch info about playlist in spotify");
+
+		spotifySession.playlist(item.uri, 0, 100, processSpotifyPlaylist.bind(this, item.uri, playlist, 0));
+	});
+}
+
+var trackQueue = new TimeQueue(trackWorker, { concurrency: 5, every: 1000 });
+
+function trackWorker(track, gmPlaylist, callback) {
+	processTracks(gmPlaylist, track);
+	callback();
+}
+
+var searchQueue = new TimeQueue(searchWorker, { concurrency: 5, every: 1000 });
+
+function searchWorker(track, playlist, callback) {
+	googleMusic.search2(track.artist[0].name+" - "+track.name,
+		function(res) {
+			callback();
+			processGmSearchResult(track, playlist, res);
+		});
+}
+
+/*function playlistWorker(arg1, arg2, callback) {
+	someAsyncFunction(calculation(arg1, arg2), callback);
+} */
+
+var processSpotifyPlaylist = function(playlistId, gmPlaylist, start, err, spotifyPlaylist) {
+	if(err) {
+		io.sockets.emit('spotify', { type: 'error', data: err });
+		console.log("spotify error: "+err);
+		return;
+	}
+
+	transferProcess.emit('gotPlaylistLength', spotifyPlaylist.length);
+
+	//spotifyPlaylist.contents.items.forEach(processTrack.bind(this,gmPlaylist));
+	//spotifyPlaylist.contents.items.forEach(function(track) {
+		trackQueue.push(spotifyPlaylist.contents.items, gmPlaylist);
+	//});
+
+	start += spotifyPlaylist.contents.items.length;
+
+	if(spotifyPlaylist.contents.truncated)
+		spotifySession.playlist(playlistId, start, 100, processSpotifyPlaylist.bind(this, playlistId, gmPlaylist, start));
+};
+
+var processTracks = function(playlist, tracks) {
+
+	var toget = [];
+	for(var i = 0; i < tracks.length; i++) {
+		toget.push(tracks[i].uri);
+	}
+
+	spotifySession.get(toget, function (err, tracks) {
+		if(err) {
+			io.sockets.emit('spotify', { type: 'error', data: err });
+			console.log("spotify error: "+err);
+			return;
+		}
+
+		for(var i = 0; i < tracks.length; i++) {
+			var trackDetail = tracks[i];
+			var cover = "/img/no_album.png";
+
+			if(trackDetail.album.cover && trackDetail.album.cover.length >= 2)
+				cover = trackDetail.album.cover[2].uri;
+
+			io.sockets.emit('spotify', { type: 'track', data: { gm_playlist_id: playlist.id,
+				spotify_track_uri: trackDetail.uri,
+				title: trackDetail.name,
+				artist: trackDetail.artist[0].name,
+				cover: cover
+			}});
+
+			searchQueue.push(trackDetail, playlist);
+			//googleMusic.search2(trackDetail.artist[0].name+" - "+trackDetail.name, processGmSearchResult.bind(this, trackDetail, playlist));
+		}
+	});
+};
+
+var processGmSearchResult = function(track, playlist, searchResult) {
+	if(searchResult.length > 1 && searchResult[1][0] && searchResult[1][0][0]) {
+		var gmusicMatch = searchResult[1][0][0];
+
+		var gmusicId = gmusicMatch[0];
+		var gmusicNormalisedArtist = gmusicMatch[7];
+		var gmusicNormalisedAlbum = gmusicMatch[9];
+		var gmusicNormalisedAlbumArtist = gmusicMatch[8];
+		var gmusicNormalisedTitle = gmusicMatch[6];
+
+		if(gmusicNormalisedTitle.indexOf('karaoke') == -1) {
+			//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: true, gm_playlist_id: playlist.id, spotify_uri: track.uri, gm_id: gmusicId }});
+
+			googleMusic.addToPlaylist(playlist.id, [ {"id":gmusicId,"type":2} ], function( track, playlist, gmusicId, res) {
+				io.sockets.emit('gmusic', { type: 'added', data: { found: false, spotify_uri: track.uri, gm_playlist_id: playlist.id, gm_id: gmusicId }});
+				transferProcess.emit("trackDone", track.uri );
+			}.bind(this, track,playlist,gmusicId));
+
+		} else {
+			//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: false, spotify_uri: track.uri, karaoke: true }});
+			io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, spotify_uri: track.uri, karaoke: true }});
+			transferProcess.emit("trackDone", track.uri );
+		}
+	} else {
+		//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: false, gm_playlist_id: playlist.id, spotify_uri: track.uri }});
+		io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, gm_playlist_id: playlist.id, spotify_uri: track.uri }});
+		transferProcess.emit("trackDone", track.uri );
+	}
+}
 
 var googleAuth = undefined;
 var spotifySession = undefined;
 
 io.sockets.on('connection', function (socket) {
-	socket.emit('news', { hello: 'world' });
-	socket.on('my other event', function (data) {
-		console.log(data);
-	});
 });
 
 router.post('/google/login', function(request, response, next){
@@ -186,11 +297,15 @@ router.get('/portify/transfer/lists', function(request, response, next){
 router.post('/portify/transfer/start', function(request, response, next){
 	var lists = JSON.parse(request[postField]);
 
+	if(!googleAuth || !spotifySession) {
+		response.send({ status: 400, message: "not logged in." });
+	}
+
+
 	transferProcess.emit('transfer', lists);
-	io.sockets.emit('test', { receivers: 'everyone'});
 	console.log("starting transfer...");
 
-	response.send({ status: 200, message: "login successful." });
+	response.send({ status: 200, message: "transfer will start." });
 
 });
 
@@ -290,7 +405,7 @@ if(appjs) {
 	  label:'Show',
 	  action:function(){
 	    window.frame.show();
-	  },
+	  }
 	},{
 	  label:'Minimize',
 	  action:function(){
@@ -312,7 +427,9 @@ if(appjs) {
 	var window = app.createWindow({
 	  width  : 800,
 	  height : 600,
-	  icons  : __dirname + '/content/icons'
+	  icons  : __dirname + '/content/icons',
+      resizable: false,
+	  disableSecurity: true
 	});
 
 	window.on('create', function(){
@@ -320,6 +437,12 @@ if(appjs) {
 	  window.frame.show();
 	  window.frame.center();
 	  window.frame.setMenuBar(menubar);
+	});
+
+	window.on('keydown', function(e){
+		if (e.keyIdentifier === 'F12') {
+			window.frame.openDevTools();
+		}
 	});
 
 	window.on('ready', function(){

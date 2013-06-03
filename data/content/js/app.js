@@ -71,7 +71,7 @@ angular.module('portify', []).
 		return context;
 	}).
 	factory('socket', function ($rootScope) {
-		var socket = io.connect();
+		var socket = io.connect("http://localhost:3132");
 		return {
 			on: function (eventName, callback) {
 				socket.on(eventName, function () {
@@ -101,44 +101,31 @@ angular.module('portify', []).
 	      when('/google/login', {templateUrl: '/partials/google_login.html', controller: GoogleLoginCtrl}).
 		  when('/spotify/login', {templateUrl: '/partials/spotify_login.html', controller: SpotifyLoginCtrl}).
 		  when('/spotify/playlists/select', {templateUrl: '/partials/playlists.html', controller: SelectSpotifyCtrl}).
+		  when('/transfer/process_fancy', {templateUrl: '/partials/fancy_process.html', controller: FancyProcessTransferCtrl}).
 		  when('/transfer/process', {templateUrl: '/partials/process.html', controller: ProcessTransferCtrl}).
-	      otherwise({redirectTo: '/google/login'});
+	      otherwise({redirectTo: '/'});
   }).
-	animation('view-enter', function() {
+	directive('scrollGlue', function() {
 		return {
-			setup : function(element) {
-				//prepare the element for animation
-				element.css({ 'opacity': 0 });
-				var memo = "..."; //this value is passed to the start function
-				return memo;
-			},
-			start : function(element, done, memo) {
-				//start the animation
-				element.animate({
-					'opacity' : 1
-				}, 1000, function() {
-					//call when the animation is complete
-					done()
+			priority: 1,
+			require: ['?ngModel'],
+			restrict: 'A',
+			link: function(scope, $el, attrs, ctrls) {
+				var el = $el[0];
+				var lastScroll = -1;
+
+				function scrollToBottom() {
+					if(el.scrollTop < el.scrollHeight && el.scrollHeight > lastScroll) {
+						lastScroll = el.scrollHeight;
+						var targetScroll = el.scrollHeight;
+						$(el).animate( {
+							scrollTop: targetScroll
+						}, 500);
+					}
+				}
+
+				scope.$watch(function() {
+					scrollToBottom();
 				});
 			}
-		}
-	}).
-	animation('view-leave', function() {
-		return {
-			setup : function(element) {
-				//prepare the element for animation
-				element.css({ 'opacity': 1 });
-				var memo = "..."; //this value is passed to the start function
-				return memo;
-			},
-			start : function(element, done, memo) {
-				//start the animation
-				element.animate({
-					'opacity' : 0
-				}, 1000, function() {
-					//call when the animation is complete
-					done()
-				});
-			}
-		}
-	});
+		}});

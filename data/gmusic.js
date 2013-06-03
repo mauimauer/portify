@@ -17,11 +17,9 @@ GoogleMusic.prototype.init = function(googleAuth, cb) {
 	var me = this;
 	if(this.sid == undefined) {
 		this.sid = googleAuth.getSID();
-		console.log("initialsid: "+this.sid);
 	}
 	if(this.auth == undefined) {
 		this.auth = googleAuth.getAuthId();
-		console.log("initial auth: "+this.auth);
 	}
 
 	request
@@ -101,11 +99,12 @@ GoogleMusic.prototype.getPlaylist = function(playlistId) {
 				}
 			}
 
+			/*
 			console.log(me.xt);
 			console.log(me.sjsaid);
 			console.log("newsid: "+me.sid);
 
-			console.log(res);
+			console.log(res); */
 		});
 };
 
@@ -157,20 +156,30 @@ GoogleMusic.prototype.search = function(query, cb) {
 GoogleMusic.prototype.search2 = function(query, cb) {
 	request
 		.post(this.baseUrl+this.servicePath+'/search')
+		.timeout(3000)
 		.set('Authorization', 'GoogleLogin auth=' + this.googleAuth.getAuthId())
 		.set('Origin', this.baseUrl)
 		.set('Cookie','SID='+this.googleAuth.getSID()+'; sjsaid='+this.sjsaid+'; xt='+this.xt)
 		.set('Content-Type', 'application/json')
 		.type('form')
 		.query({ 'u': 0, 'xt': this.xt, 'format': 'jsarray' })
-		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+query+'",10]]:')
-		.end(function(res){
-			var response = res.text;
+		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+query+'",2]]')
+		.end(function(err, res){
 
-			response = response.replace(/(\r\n|\n|\r)/gm,"").replace(/\,\,/g, ',"",').replace(/\[\,/g, '["",').replace(/\,\]/g, ',""]').replace(/\,\,/g, ',"",');
+			if(err) {
+				console.error("gmusic:search2(), error");
+				console.error(err);
+			}
 
-			if(cb)
-				cb(JSON.parse(response));
+			response = res.text.replace(/(\r\n|\n|\r)/gm,"").replace(/\,\,/g, ',"",').replace(/\[\,/g, '["",').replace(/\,\]/g, ',""]').replace(/\,\,/g, ',"",');
+
+			try {
+				var parsed = JSON.parse(response);
+				if(cb)
+					cb(parsed);
+			} catch(e) {
+				console.error("gmusic:search2(), parsing failed");
+			}
 		});
 };
 
@@ -214,7 +223,7 @@ GoogleMusic.prototype.createPlaylist = function(title, description, isPublic, cb
 		.query({ 'u': 0, 'xt': this.xt, 'format': 'jsarray'})
 		.send(send)
 		.end(function(res){
-			console.log(res);
+			//console.log(res);
 			var response = JSON.parse(res.text);
 
 			if(cb)
