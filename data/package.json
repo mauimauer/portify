@@ -1,14 +1,15 @@
 {
     "name": "portify",
-    "description": "Moves your playlists to Google",
+    "description": "Moves your Spotify playlists to Google",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-		"googleclientlogin": "*",
-		"socket.io": "*",
-	    "express": "*",
-	    "superagent": "*",
-	    "levenshtein": "*",
-	    "timequeue": "*"
+    	"googleclientlogin": "*",
+    	"spotify-web": "https://github.com/mauimauer/node-spotify-web/tarball/master",
+    	"socket.io": "*",
+    	"express": "*",
+    	"superagent": "*",
+    	"levenshtein": "*",
+    	"timequeue": "*"
     }
 }
