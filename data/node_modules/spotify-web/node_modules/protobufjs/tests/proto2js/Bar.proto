@@ -1,7 +1,0 @@
-// Bar.proto
-import "Foo.proto";
-
-// really extend Bar but that produces an empty constructor. 
-message Bar {
-    required string buzz = 2;
-}
