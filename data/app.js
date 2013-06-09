@@ -170,10 +170,7 @@ var processSpotifyPlaylist = function(playlistId, gmPlaylist, start, err, spotif
 
 	transferProcess.emit('gotPlaylistLength', spotifyPlaylist.length);
 
-	//spotifyPlaylist.contents.items.forEach(processTrack.bind(this,gmPlaylist));
-	//spotifyPlaylist.contents.items.forEach(function(track) {
-		trackQueue.push(spotifyPlaylist.contents.items, gmPlaylist);
-	//});
+	trackQueue.push(spotifyPlaylist.contents.items, gmPlaylist);
 
 	start += spotifyPlaylist.contents.items.length;
 
@@ -235,12 +232,12 @@ var processGmSearchResult = function(track, playlist, searchResult) {
 
 		} else {
 			//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: false, spotify_uri: track.uri, karaoke: true }});
-			io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, spotify_uri: track.uri, karaoke: true }});
+			io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, spotify_uri: track.uri, karaoke: true, track: track }});
 			transferProcess.emit("trackDone", track.uri );
 		}
 	} else {
 		//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: false, gm_playlist_id: playlist.id, spotify_uri: track.uri }});
-		io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, gm_playlist_id: playlist.id, spotify_uri: track.uri }});
+		io.sockets.emit('gmusic', { type: 'not_added', data: { found: false, gm_playlist_id: playlist.id, spotify_uri: track.uri, track: track  }});
 		transferProcess.emit("trackDone", track.uri );
 	}
 }
@@ -286,21 +283,20 @@ router.post('/spotify/login', function(request, response, next){
   });
 });
 
-router.post('/portify/transfer/lists', function(request, response, next){
-
-});
-
-router.get('/portify/transfer/lists', function(request, response, next){
-
-});
-
 router.post('/portify/transfer/start', function(request, response, next){
 	var lists = JSON.parse(request[postField]);
 
-	if(!googleAuth || !spotifySession) {
-		response.send({ status: 400, message: "not logged in." });
+	if(!googleAuth) {
+		response.send({ status: 401, message: "Google: not logged in." });
 	}
 
+	if(!spotifySession) {
+		response.send({ status: 402, message: "Spotify: not logged in." });
+	}
+
+	if(!lists || lists.length == 0) {
+		response.send({ status: 403, message: "Please select at least one playlist." });
+	}
 
 	transferProcess.emit('transfer', lists);
 	console.log("starting transfer...");
@@ -325,6 +321,11 @@ router.get('/spotify/playlists', function(request, response, next){
 	var playlists = [];
 	var i = 0;
 
+
+	playlists.push({
+		name: "Starred Tracks",
+		uri: "hm://playlist/user/"+spotifySession.username+"/starred"
+	});
 	rootlist.contents.items.forEach(function(item) {
 		if(item.uri.indexOf('playlist') != -1) {
 			spotifySession.playlist(item.uri, 0, 1, function (err, pl) {

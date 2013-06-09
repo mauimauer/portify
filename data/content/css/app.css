@@ -69,6 +69,24 @@ body {
     padding-left: 5px;
 }
 
+.notfound {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 23px;
+    background: rgba(133,133,133,1);
+    color: #ffffff;
+    opacity: 1;
+    z-index: 16;
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.notfound a {
+    color: #ffffff;
+}
+
 .done {
     position: absolute;
     top: 0px;

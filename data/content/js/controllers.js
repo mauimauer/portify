@@ -20,6 +20,9 @@ function ProcessTransferCtrl($scope, $rootScope, $filter, $http, $route, $routeP
 	$scope.alldone = false;
 	$scope.processing = false;
 
+	$scope.notfound = [];
+	$scope.shownotfound = false;
+	
 	$scope.currentPlaylist = {
 		name: "",
 		processed: 0,
@@ -33,6 +36,14 @@ function ProcessTransferCtrl($scope, $rootScope, $filter, $http, $route, $routeP
 	$timeout(function() {
 		portifyService.startTransfer($scope.playlists);
 	}, 600);
+
+	$scope.hideMissing = function() {
+		$scope.shownotfound = false;
+	};
+
+	$scope.showMissing = function() {
+		$scope.shownotfound = true;
+	};
 
 	socket.on('portify', function (data) {
 		if(data.type == "playlist_started") {
@@ -64,6 +75,7 @@ function ProcessTransferCtrl($scope, $rootScope, $filter, $http, $route, $routeP
 			$scope.currentPlaylist.processed++;
 			$scope.currentPlaylist.found++;
 		} else if(data.type == "not_added") {
+			$scope.notfound.push(data.data.track);
 			$scope.currentPlaylist.processed++;
 			$scope.currentPlaylist.notfound++;
 			if(data.data.karaoke) {
@@ -149,16 +161,6 @@ function GoogleLoginCtrl($scope, $rootScope, $http, $location) {
 			}
 		}).success(function(response){
 			if(response.status == 200) {
-				/*$http({
-					url: "/test",
-					dataType: "json",
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json; charset=utf-8"
-					}
-				}).success(function(res) {
-
-				});*/
 				$location.path( "/spotify/login" );
 			} else {
 				alert("Login failed.");
@@ -211,6 +213,10 @@ function SelectSpotifyCtrl($scope, $rootScope, $http, $location, portifyService,
 				context.addItem($scope.playlists.$$v[i]);
 			}
 		}
-		$location.path( "/transfer/process" );
+
+		if(context.items().length == 0)
+			alert("Please select at least one playlist");
+		else
+			$location.path( "/transfer/process" );
 	}
 }

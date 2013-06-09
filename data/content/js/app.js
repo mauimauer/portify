@@ -1,5 +1,5 @@
 angular.module('portify', []).
-  factory('portifyService', function($rootScope, $http, $q) {
+  factory('portifyService', function($rootScope, $http, $q, $location) {
     var portifyService = {};
 
     //Gets the list of nuclear weapons
@@ -29,19 +29,17 @@ angular.module('portify', []).
 			}
 		}).success(function(response){
 				if(response.status == 200) {
-					/*$http({
-					 url: "/test",
-					 dataType: "json",
-					 method: "GET",
-					 headers: {
-					 "Content-Type": "application/json; charset=utf-8"
-					 }
-					 }).success(function(res) {
-
-					 });*/
-					console.log("transfer initiated.");
+					console.log("initated transfer...");
 				} else {
-					alert("Login failed.");
+					if(response.status == 401)
+						$location.path( "/google/login" );
+					else if(response.status == 402)
+						$location.path( "/spotify/login" );
+					else if(response.status == 403)
+						$location.path( "/spotify/playlists/select" );
+					else
+						$location.path( "/" );
+
 				}
 			}).error(function(error){
 				console.log(error);
