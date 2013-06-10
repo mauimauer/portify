@@ -12,7 +12,7 @@ var app,
 	io = require('socket.io'),
 	TimeQueue = require('timequeue');
 
-console.log("portify 0.1");
+console.log("portify 0.2");
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');

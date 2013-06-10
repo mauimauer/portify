@@ -163,7 +163,7 @@ GoogleMusic.prototype.search2 = function(query, cb) {
 		.set('Content-Type', 'application/json')
 		.type('form')
 		.query({ 'u': 0, 'xt': this.xt, 'format': 'jsarray' })
-		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+query+'",2]]')
+		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+encodeURIComponent(query)+'",2]]')
 		.end(function(err, res){
 
 			if(err) {
@@ -192,7 +192,7 @@ GoogleMusic.prototype.addPlaylist = function(title, cb) {
 		.set('Content-Type', 'application/json')
 		.type('form')
 		.query({ 'u': 0, 'xt': this.xt })
-		.send('json={"title":"'+title+'"}')
+		.send('json={"title":"'+encodeURIComponent(title)+'"}')
 		.end(function(res){
 			var response = JSON.parse(res.text);
 
@@ -206,11 +206,11 @@ GoogleMusic.prototype.createPlaylist = function(title, description, isPublic, cb
 
 	var send = "";
 	if(title && description && isPublic) {
-		send = '[[null,1],['+isPublic+',"'+title+'","'+description+'",[]]]'
+		send = '[[null,1],['+isPublic+',"'+encodeURIComponent(title)+'","'+encodeURIComponent(description)+'",[]]]'
 	} else if(title && description) {
-		send = '[[null,1],[false,"'+title+'","'+description+'",[]]]'
+		send = '[[null,1],[false,"'+encodeURIComponent(title)+'","'+encodeURIComponent(description)+'",[]]]'
 	} else {
-		send = '[[null,1],[false,"'+title+'",null,[]]]'
+		send = '[[null,1],[false,"'+encodeURIComponent(title)+'",null,[]]]'
 	}
 
 	request
