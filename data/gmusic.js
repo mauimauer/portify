@@ -163,7 +163,7 @@ GoogleMusic.prototype.search2 = function(query, cb) {
 		.set('Content-Type', 'application/json')
 		.type('form')
 		.query({ 'u': 0, 'xt': this.xt, 'format': 'jsarray' })
-		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+encodeURIComponent(query)+'",2]]')
+		.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+query+'",2]]')
 		.end(function(err, res){
 
 			if(err) {
