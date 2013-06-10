@@ -196,7 +196,7 @@ var processTracks = function(playlist, tracks) {
 			var trackDetail = tracks[i];
 			var cover = "/img/no_album.png";
 
-			if(trackDetail.album.cover && trackDetail.album.cover.length >= 2)
+			if(trackDetail.album.cover && trackDetail.album.cover.length >= 2 && trackDetail.album.cover[2] != undefined)
 				cover = trackDetail.album.cover[2].uri;
 
 			io.sockets.emit('spotify', { type: 'track', data: { gm_playlist_id: playlist.id,
