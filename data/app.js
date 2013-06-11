@@ -12,7 +12,7 @@ var app,
 	io = require('socket.io'),
 	TimeQueue = require('timequeue');
 
-console.log("portify 0.2");
+console.log("portify 0.4");
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');
@@ -321,7 +321,6 @@ router.get('/spotify/playlists', function(request, response, next){
 	var playlists = [];
 	var i = 0;
 
-
 	playlists.push({
 		name: "Starred Tracks",
 		uri: "hm://playlist/user/"+spotifySession.username+"/starred"
@@ -331,17 +330,15 @@ router.get('/spotify/playlists', function(request, response, next){
 			spotifySession.playlist(item.uri, 0, 1, function (err, pl) {
 				if (err) {
 					console.log(err);
-					response.send({ status: 400, message: "could not get spotify playlist "+ item.uri, error: err });
-					return;
+					i++;
+				} else {
+					i++;
+					var plist = {
+						name: pl.attributes.name,
+						uri: item.uri
+					};
+					playlists.push(plist);
 				}
-
-				i++;
-				var plist = {
-					name: pl.attributes.name,
-					uri: item.uri
-				};
-				playlists.push(plist);
-				
 				if(i == rootlist.contents.items.length) {
 					response.send({ status: 200, message: "ok", data: playlists});
 				}
