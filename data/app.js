@@ -12,7 +12,7 @@ var app,
 	io = require('socket.io'),
 	TimeQueue = require('timequeue');
 
-console.log("portify 0.4");
+console.log("portify 0.5");
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');
@@ -129,7 +129,7 @@ var transferPlaylist = function(item) {
 	transferProcess.playlistLength = 0;
 
 	io.sockets.emit('portify', { type: 'playlist_started', data: { playlist: item }});
-	googleMusic.addPlaylist(item.name, function(playlist) {
+	googleMusic.createPlaylist(item.name, null, false, function(playlist) {
 		console.log("created playlist "+ item.name + "("+item.uri+") on google music");
 
 		io.sockets.emit('gmusic', { type: 'playlist', data: { pl: playlist, name: item.name }});

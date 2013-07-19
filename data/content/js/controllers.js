@@ -1,7 +1,7 @@
 function MainCtrl($scope, $route, $routeParams, $location, context) {
 	$scope.context = context.items();
 	$scope.app_name = "Portify";
-	$scope.app_version = "0.0.4";
+	$scope.app_version = "0.0.5";
 }
 
 function WelcomeCtrl($scope, $rootScope, $route, $routeParams, $location) {
