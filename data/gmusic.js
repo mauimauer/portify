@@ -170,9 +170,9 @@ GoogleMusic.prototype.search2 = function(query, cb) {
 				console.error("gmusic:search2(), error");
 				console.error(err);
 			}
-
+			if (res) {
 			response = res.text.replace(/(\r\n|\n|\r)/gm,"").replace(/\,\,/g, ',"",').replace(/\[\,/g, '["",').replace(/\,\]/g, ',""]').replace(/\,\,/g, ',"",');
-
+                        }
 			try {
 				var parsed = JSON.parse(response);
 				if(cb)
