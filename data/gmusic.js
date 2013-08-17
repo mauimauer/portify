@@ -157,14 +157,14 @@ GoogleMusic.prototype.search2 = function(query, cb) {
 	var that = this;
 	setTimeout(function innerSearch() {
 		request
-			.post(this.baseUrl+this.servicePath+'/search')
+			.post(that.baseUrl+that.servicePath+'/search')
 			.timeout(3000)
-			.set('Authorization', 'GoogleLogin auth=' + this.googleAuth.getAuthId())
-			.set('Origin', this.baseUrl)
-			.set('Cookie','SID='+this.googleAuth.getSID()+'; sjsaid='+this.sjsaid+'; xt='+this.xt)
+			.set('Authorization', 'GoogleLogin auth=' + that.googleAuth.getAuthId())
+			.set('Origin', that.baseUrl)
+			.set('Cookie','SID='+that.googleAuth.getSID()+'; sjsaid='+that.sjsaid+'; xt='+that.xt)
 			.set('Content-Type', 'application/json')
 			.type('form')
-			.query({ 'u': 0, 'xt': this.xt, 'format': 'jsarray' })
+			.query({ 'u': 0, 'xt': that.xt, 'format': 'jsarray' })
 			.send('[["'+randomString(12,'abcdefghijklmnopqrstuvwxyz0123456789')+'",1],["'+query+'",2]]')
 			.end(function(err, res){
 	
