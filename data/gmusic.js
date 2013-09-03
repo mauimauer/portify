@@ -195,7 +195,7 @@ GoogleMusic.prototype.addPlaylist = function(title, cb) {
 		.set('Content-Type', 'application/json')
 		.type('form')
 		.query({ 'u': 0, 'xt': this.xt })
-		.send('json={"title":"'+encodeURIComponent(title)+'"}')
+		.send('json={"title":"'+title+'"}')
 		.end(function(res){
 			var response = JSON.parse(res.text);
 
