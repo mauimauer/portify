@@ -209,11 +209,11 @@ GoogleMusic.prototype.createPlaylist = function(title, description, isPublic, cb
 
 	var send = "";
 	if(title && description && isPublic) {
-		send = '[[null,1],['+isPublic+',"'+encodeURIComponent(title)+'","'+encodeURIComponent(description)+'",[]]]'
+		send = '[[null,1],['+isPublic+',"'+title+'","'+description+'",[]]]'
 	} else if(title && description) {
-		send = '[[null,1],[false,"'+encodeURIComponent(title)+'","'+encodeURIComponent(description)+'",[]]]'
+		send = '[[null,1],[false,"'+title+'","'+description+'",[]]]'
 	} else {
-		send = '[[null,1],[false,"'+encodeURIComponent(title)+'",null,[]]]'
+		send = '[[null,1],[false,"'+title+'",null,[]]]'
 	}
 
 	request
