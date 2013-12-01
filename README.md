@@ -25,3 +25,6 @@ Building portify
 * Go into the ./data/ directory and run npm install (This will fetch and compile all depenencies of portify)
 * Try running the daemon by executing node app.js in the ./data/ folder
 * Open your favourite browser and go to localhost:3132
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mauimauer/portify/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
