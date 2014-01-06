@@ -27,4 +27,4 @@ Building portify
 * Open your favourite browser and go to localhost:3132
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mauimauer/portify/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
+[![Analytics](https://ga-beacon.appspot.com/UA-374323-19/portify/README?pixel)](https://github.com/igrigorik/ga-beacon)
