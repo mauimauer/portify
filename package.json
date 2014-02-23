@@ -1,0 +1,20 @@
+{
+  "name": "portify",
+  "description": "Moves your Spotify playlists to Google",
+  "version": "0.0.6",
+  "private": true,
+  "dependencies": {
+    "spotify-web": "https://github.com/adammw/node-spotify-web/tarball/api-redesign/",
+    "socket.io": "~0.9.16",
+    "express": "~3.4.8",
+    "superagent": "~0.16.0",
+    "levenshtein": "~1.0.4",
+    "timequeue": "~0.2.2",
+    "googleapis": "~0.6.1"
+  },
+  "config": {
+    "gapi_client_id": "your_client_id",
+    "gapi_client_secret": "your_client_secret",
+    "gapi_redirect_uri": "your_redirect_url"
+  }
+}

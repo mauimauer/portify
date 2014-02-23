@@ -4,21 +4,24 @@ var app,
 	server,
 	postField,
 	appjs = false,
+	env = process.env,
 	http = require('http'),
-	GoogleClientLogin = require('googleclientlogin').GoogleClientLogin,
+	googleapis = require('googleapis'),
+	googleapisOAuth = googleapis.OAuth2Client,
 	Spotify = require('spotify-web'),
 	events = require('events'),
 	googleMusic = require('./gmusic.js'),
 	io = require('socket.io'),
 	TimeQueue = require('timequeue');
 
-console.log("portify 0.51");
+console.log("portify, version: " + process.env.npm_package_version);
+
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');
 	postField = "body";
 	app = express();
-	server = http.createServer(app)
+	server = http.createServer(app);
 	router = app;
 	app.use(express.static(__dirname + '/content'));
 	app.use (function(req, res, next) {
@@ -33,6 +36,30 @@ if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 			next();
 		});
 	});
+	app.get("/generateoauth", function (req, res) {
+		var uri = getAccessToken();
+		res.redirect(301,uri);
+	});
+	app.get("/oauthcallback", function (req, res) {
+		var code = req.query.code;
+		res.cookie(
+			'token',
+			req.query.code
+			);
+		if (code) {
+			res.redirect(301, "/#/spotify/login");
+		} else {
+			res.send(
+				500,
+				{
+					error: 'Please authorize with one Google ' +
+						'account.'
+				}
+			);
+
+		}
+	});
+
 	app.use(app.router);
 
 	server.listen(3132);
@@ -276,7 +303,7 @@ router.post('/spotify/login', function(request, response, next){
 		response.send({ status: 400, message: "login failed.", error: err });
 		return;
 	}
-	
+
 	console.log("Spotify Login success");
 	spotifySession = spotify;
 	response.send({ status: 200, message: "login successful." });
@@ -448,8 +475,10 @@ if(appjs) {
 	  window.process = process;
 	  window.module = module;
 
-	  function F12(e){ return e.keyIdentifier === 'F12' }
-	  function Command_Option_J(e){ return e.keyCode === 74 && e.metaKey && e.altKey }
+	  function F12(e){ return e.keyIdentifier === 'F12'; }
+	  function Command_Option_J(e){
+          return e.keyCode === 74 && e.metaKey && e.altKey;
+      }
 
 	  window.addEventListener('keydown', function(e){
 	    if (F12(e) || Command_Option_J(e)) {
@@ -462,3 +491,28 @@ if(appjs) {
 	  console.log("Window Closed");
 	});
 }
+
+function getAccessToken(oauth2Client) {
+    return function () {
+        // generate consent page url
+        var url = oauth2Client.generateAuthUrl({
+            access_type: 'offline', // will return a refresh token
+            scope: 'https://www.googleapis.com/auth/plus.me'
+        });
+        return url;
+    };
+}
+
+
+// load google plus v1 API resources and methods
+googleapis
+  .execute(function(err, client) {
+
+  var oauth2Client =
+    new googleapisOAuth(
+          env.npm_package_config_gapi_client_id,
+          env.npm_package_config_gapi_client_secret,
+          env.npm_package_config_gapi_redirect_uri
+    );
+      getAccessToken = getAccessToken(oauth2Client);
+});
