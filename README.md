@@ -22,8 +22,8 @@ Building portify
 * Make sure you have installed a usable build enviroment (gcc, make & co.)
 * Install Node.js (using your favourite package manager, but make sure it's newer than 0.8)
 * Clone the git repo (master branch)
-* Go into the ./data/ directory and run npm install (This will fetch and compile all depenencies of portify)
-* Try running the daemon by executing node app.js in the ./data/ folder
+* `npm install` Install dependencies
+* `npm start` Start the server
 * Open your favourite browser and go to localhost:3132
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mauimauer/portify/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

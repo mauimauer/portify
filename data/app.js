@@ -12,13 +12,14 @@ var app,
 	io = require('socket.io'),
 	TimeQueue = require('timequeue');
 
-console.log("portify 0.51");
+console.log("portify, version: " + process.env.npm_package_version);
+
 if (typeof Proxy !== 'object' || typeof WeakMap !== 'function') {
 	console.log("Starting without harmony");
 	express = require('express');
 	postField = "body";
 	app = express();
-	server = http.createServer(app)
+	server = http.createServer(app);
 	router = app;
 	app.use(express.static(__dirname + '/content'));
 	app.use (function(req, res, next) {
@@ -276,7 +277,7 @@ router.post('/spotify/login', function(request, response, next){
 		response.send({ status: 400, message: "login failed.", error: err });
 		return;
 	}
-	
+
 	console.log("Spotify Login success");
 	spotifySession = spotify;
 	response.send({ status: 200, message: "login successful." });
@@ -448,8 +449,10 @@ if(appjs) {
 	  window.process = process;
 	  window.module = module;
 
-	  function F12(e){ return e.keyIdentifier === 'F12' }
-	  function Command_Option_J(e){ return e.keyCode === 74 && e.metaKey && e.altKey }
+	  function F12(e){ return e.keyIdentifier === 'F12'; }
+	  function Command_Option_J(e){
+          return e.keyCode === 74 && e.metaKey && e.altKey;
+      }
 
 	  window.addEventListener('keydown', function(e){
 	    if (F12(e) || Command_Option_J(e)) {
