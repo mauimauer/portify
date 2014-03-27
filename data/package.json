@@ -5,7 +5,7 @@
     "private": true,
     "dependencies": {
     	"googleclientlogin": "*",
-    	"spotify-web": "https://github.com/mauimauer/node-spotify-web/tarball/master",
+    	"spotify-web": "*",
     	"socket.io": "*",
     	"express": "*",
     	"superagent": "*",
