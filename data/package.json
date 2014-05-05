@@ -5,9 +5,9 @@
     "private": true,
     "dependencies": {
     	"googleclientlogin": "*",
-    	"spotify-web": "*",
+    	"spotify-web": "1.2.0",
     	"socket.io": "*",
-    	"express": "*",
+    	"express": "3.5.1",
     	"superagent": "*",
     	"levenshtein": "*",
     	"timequeue": "*"
