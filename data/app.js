@@ -217,10 +217,10 @@ var processGmSearchResult = function(track, playlist, searchResult) {
 		var gmusicMatch = searchResult[1][0][0];
 
 		var gmusicId = gmusicMatch[0];
-		var gmusicNormalisedArtist = gmusicMatch[7];
-		var gmusicNormalisedAlbum = gmusicMatch[9];
-		var gmusicNormalisedAlbumArtist = gmusicMatch[8];
-		var gmusicNormalisedTitle = gmusicMatch[6];
+		var gmusicNormalisedArtist = gmusicMatch[3];
+		var gmusicNormalisedAlbum = gmusicMatch[4];
+		var gmusicNormalisedAlbumArtist = gmusicMatch[3];
+		var gmusicNormalisedTitle = gmusicMatch[1];
 
 		if(gmusicNormalisedTitle.indexOf('karaoke') == -1) {
 			//io.sockets.emit('gmusic', { type: 'found_possible_matches', data: { found: true, gm_playlist_id: playlist.id, spotify_uri: track.uri, gm_id: gmusicId }});
