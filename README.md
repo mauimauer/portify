@@ -11,6 +11,8 @@ If you choose not to agree to these terms, then you may not use this tool.
 
 You can read about portify here: [http://www.maui.at/2013/06/portify/](http://www.maui.at/2013/06/portify/)
 
+NOTE: At this time, Portify requires a Spotify Premium account
+
 License
 -------
 
